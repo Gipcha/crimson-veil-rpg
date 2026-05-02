@@ -1,0 +1,223 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body {
+    font-family: Arial, sans-serif;
+    background-image: url(/images/game-bg.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: #e6e6e6;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* START SCREEN */
+#start-screen {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+}
+
+.start-card {
+    width: 420px;
+    padding: 25px;
+
+    background: #1f1a22;
+    border: 1px solid #3b2a33;
+    border-radius: 12px;
+
+    box-shadow: 0 0 25px rgba(255, 0, 60, 0.25);
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    text-align: center;
+}
+
+.start-card h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: #ff4d6d;
+}
+
+/* INPUT */
+#name-input {
+    width: 100%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+    outline: none;
+}
+
+/* BUTTONS */
+button {
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #3a2a33;
+    color: #fff;
+
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #5a2d3a;
+    transform: scale(1.03);
+}
+
+/* MAIN CONTAINER */
+#game-container {
+    width: 650px;
+    background-color: #1f1a22;
+
+    border: 1px solid #3b2a33;
+    border-radius: 12px;
+
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(120, 0, 40, 0.4);
+
+    margin-top: 50px;
+}
+
+/* TITLE */
+h1 {
+    font-family: 'Cinzel Decorative', serif;
+    text-align: center;
+
+    margin-bottom: 20px;
+
+    color: #ff4d6d;
+    text-shadow: 0 0 15px #c11736;
+
+    letter-spacing: 4px;
+    font-size: 50px;
+}
+
+/* STATS */
+#player-stats {
+    background-color: #2a232d;
+    padding: 15px;
+
+    border-radius: 10px;
+    margin-bottom: 15px;
+
+    border: 1px solid #3b2a33;
+}
+
+.stats-list p {
+    margin: 6px 0;
+}
+
+.stats-list span {
+    color: #ffb3c1;
+    margin-left: 5px;
+}
+
+/* ACTION BUTTONS */
+.main-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+/* LOCATIONS */
+#locations {
+    background-color: #2a232d;
+    padding: 15px;
+
+    border-radius: 10px;
+    margin-bottom: 15px;
+
+    border: 1px solid #3b2a33;
+}
+
+#current-location {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #fbf5f6;
+}
+
+#location-name {
+    color: #ff4d6d;
+    text-shadow: 0 0 5px #ff4d6d;
+}
+
+.locations-button {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.locations-button button {
+    flex: 1 1 45%;
+}
+
+/* ===== RPG SCENE SYSTEM ===== */
+
+#dark-chronicle {
+    display: flex;
+    flex-direction: column;
+
+    background-color: #0d0a0f;
+    border: 1px solid #3b2a33;
+    border-radius: 10px;
+
+    padding: 15px;
+    height: 140px;
+
+    overflow-y: auto;
+    margin-bottom: 15px;
+
+    font-size: 14px;
+    color: #f7eef1;
+}
+
+/* ОДНА СЦЕНА */
+.scene {
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(255, 77, 109, 0.25);
+
+    padding: 12px;
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+
+    box-shadow: 0 0 12px rgba(255, 77, 109, 0.15);
+}
+
+/* строки внутри сцены */
+.scene p {
+    margin: 4px 0;
+    color: #f5f5f5;
+}
+
+/* RESET BUTTON */
+#reset-btn {
+    width: 100%;
+    background-color: #6b1f2e;
+}
+
+#reset-btn:hover {
+    background-color: #a12b3f;
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="start-screen">
+        <div class="start-card">
+            <h2>Enter your name</h2>
+
+            <input id="name-input" type="text" placeholder="Your vampire's name...">
+
+            <button id="start-btn">Start Game</button>
+        </div>
+    </div>
+    <div id="game-container">
+        <h1>Crimson Veil 🐺</h1>
+    <div id="player-stats">
+        <div class="stats-list">
+            <p>Name:<span id="player-name"></span></p> 
+            <p>Health:<span id="player-health"></span></p>
+            <p>Strength:<span id="player-strength"></span></p>
+            <p>Shield:<span id="player-shield"></span></p>
+            <p>Level:<span id="player-level"></span></p>
+            <p>Inventory:<span id="player-inventory"></span></p>
+        </div>
+        <div class="main-buttons">
+            <button type="button" id="attack-btn">⚔️ Fight</button>
+            <button type="button" id="drain-btn">🩸 Drain Blood</button>
+            <button type="button" id="give-gold-btn">🌕 Give gold</button>
+        </div>
+    </div>
+    <div id="locations">
+        <div id="current-location">Current Location: <span id="location-name">Vampire Manor</span> </div>
+        <div class="locations-button">
+            <button type="button" id="crypt-btn">go to the Crypt</button>
+            <button type="button" id="cemetery-btn">go to the  Moonlight Cemetery</button>
+            <button type="button" id="hall-btn">go to the  Blood Hall</button>
+            <button type="button" id="tower-btn">go to the Forgotten Tower</button>
+        </div>
+    </div>
+    <p class="dark-chronicle-title">Dark Chronicle</p>
+    <div id="dark-chronicle">
+        <p>The night is waiting…</p>
+    </div>
+    <button type="button" id="reset-btn">Reset Game</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
