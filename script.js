@@ -11,8 +11,8 @@ const player = {
     sword: 1,
     healthPotion: 2,
     key: 0,
-    gold: 5
-  }
+    gold: 5,
+  },
 };
 
 const locations = {
@@ -22,7 +22,7 @@ const locations = {
     state: "guard",
     enemies: {
       guard: { name: "Grave Guardian", maxHealth: 80, shield: 10 },
-      spiders: { name: "Black Spiders", maxHealth: 50, shield: 5 },
+      spiders: { name: "Black Spider", maxHealth: 50, shield: 5 },
     },
   },
 
@@ -44,6 +44,8 @@ const locations = {
 // =====================
 let currentLocation = "manor";
 let currentEnemy = null;
+let isTransitioning = false;
+let combatLog = [];
 
 // =====================
 // 3. DOM (элементы страницы)
@@ -61,11 +63,11 @@ const attackBtn = document.querySelector("#attack-btn");
 const drainBtn = document.querySelector("#drain-btn");
 const giveGoldBtn = document.querySelector("#give-gold-btn");
 const resetBtn = document.querySelector("#reset-btn");
-const potionBtn = document.querySelector('#potion-btn');
+const potionBtn = document.querySelector("#potion-btn");
+const critBtn = document.querySelector("#crit-btn");
 
 const chronicle = document.querySelector("#dark-chronicle");
 const locationName = document.querySelector("#location-name");
-
 
 // =====================
 // 4. UI (обновление интерфейса)
@@ -88,7 +90,7 @@ function updateUI() {
 function showScene(lines) {
   chronicle.innerHTML = `
     <div class="scene">
-      ${lines.map(line => `<p>${line}</p>`).join("")}
+      ${lines.map((line) => `<p>${line}</p>`).join("")}
     </div>
   `;
 }
@@ -150,14 +152,13 @@ function handleLocation() {
   spawnEnemy();
 }
 
-// создание врага (ВАЖНО!)
+// создание врага
 function createEnemy(template) {
   return {
     ...template,
     health: template.maxHealth,
   };
 }
-
 
 // спавн врага
 function spawnEnemy() {
@@ -186,48 +187,6 @@ function spawnEnemy() {
 // 7. ACTIONS
 // =====================
 
-// дать золото
-function giveGold() {
-  if (player.inventory.gold < 3) {
-    showScene(["You don't have enough gold!"]);
-    return;
-  }
-
-  player.inventory.gold -= 3;
-
-  locations.crypt.state = "spiders";
-
-  showScene([
-    "You give gold to the Guardian...",
-    "He steps aside silently...",
-    "Something moves deeper in the crypt...",
-  ]);
-
-  setTimeout(() => {
-    spawnEnemy();
-  }, 1500);
-
-  updateUI();
-}
-
-function usePotion(){
-  if (player.inventory.healthPotion <= 0){
-    showScene(['No potions left.']);
-    return
-  }
-  player.inventory.healthPotion -= 1;
-  player.health += 30;
-
-  if (player.health > 100) player.health = 100;
-
-  showScene([
-    'You drink a health potion',
-    '+30 HP',
-    `Your HP: ${player.health}`
-  ]);
-  updateUI();
-}
-
 // атака
 function attack() {
   if (!currentEnemy) {
@@ -235,57 +194,72 @@ function attack() {
     return;
   }
 
-  // ты бьёшь
-  const damageToEnemy = 20;
-  currentEnemy.health -= damageToEnemy;
+  combatLog = []; // ❗ очищаем в начале действия
 
-  // враг бьёт
+  const damageToEnemy = 20;
   const damageToPlayer = 5;
+
+  currentEnemy.health -= damageToEnemy;
   player.health -= damageToPlayer;
 
-  showScene([
-    `You hit ${currentEnemy.name} for ${damageToEnemy}`,
+  combatLog.push(`You hit ${currentEnemy.name} for ${damageToEnemy}`);
+  combatLog.push(
     `${currentEnemy.name} HP: ${Math.max(currentEnemy.health, 0)}`,
-    `${currentEnemy.name} hits you for ${damageToPlayer}`,
-    `Your HP: ${Math.max(player.health, 0)}`,
-  ]);
+  );
+  combatLog.push(`${currentEnemy.name} hits you for ${damageToPlayer}`);
+  combatLog.push(`Your HP: ${player.health}`);
 
-  // смерть врага
-if (currentEnemy.health <= 0) {
+  showScene(combatLog);
 
-  let lines = [`${currentEnemy.name} is defeated!`];
-
-  if (currentLocation === "cemetery") {
-    player.inventory.key += 1;
-    lines.push("You found a key!");
+  if (currentEnemy.health <= 0) {
+    handleEnemyDeath();
   }
 
-  showScene(lines);
+  updateUI();
+}
+//
+function handleEnemyDeath() {
+  if (!currentEnemy) return;
+
+  const dead = currentEnemy;
+  currentEnemy = null;
+
+  setTimeout(() => {
+    let lines = [`${dead.name} is defeated!`];
+
     if (currentLocation === "crypt") {
       if (locations.crypt.state === "guard") {
         locations.crypt.state = "spiders";
+        player.level++;
 
-        showScene([
-          "Guardian falls...",
-          "Something crawls in the darkness...",
-        ]);
+        lines.push("Something crawls in the darkness...");
 
-        setTimeout(spawnEnemy, 1200);
+        showScene(lines);
+
+        setTimeout(spawnEnemy, 3000);
         return;
       }
 
       if (locations.crypt.state === "spiders") {
         locations.crypt.state = "cleared";
         player.level++;
+
+        lines.push("The Crypt is now silent...");
+        lines.push("The area is peaceful...");
+
+        showScene(lines);
+
+        updateUI();
+        return;
       }
     }
 
-    spawnEnemy();
-  }
-
-  updateUI();
+    showScene(lines);
+    setTimeout(spawnEnemy, 3000);
+  }, 1200);
 }
 
+//
 function drainBlood() {
   if (!currentEnemy) {
     showScene(["There is nothing to drain."]);
@@ -336,6 +310,114 @@ function drainBlood() {
 
   updateUI();
 }
+
+// дать золото
+function giveGold() {
+  // ❗ 1. проверка локации
+  if (currentLocation !== "crypt") {
+    showScene(["There is no one to pay here."]);
+    return;
+  }
+
+  // ❗ 2. проверка состояния крипты
+  if (locations.crypt.state !== "guard") {
+    showScene(["There is no Guardian to pay."]);
+    return;
+  }
+
+  // ❗ 3. проверка золота
+  if (player.inventory.gold < 3) {
+    showScene(["You don't have enough gold!"]);
+    return;
+  }
+
+  // 💰 списание
+  player.inventory.gold -= 3;
+
+  // 🔁 смена состояния
+  locations.crypt.state = "spiders";
+
+  showScene([
+    "You give gold to the Guardian...",
+    "He steps aside silently...",
+    "Something moves deeper in the crypt...",
+  ]);
+
+  setTimeout(() => {
+    spawnEnemy();
+  }, 500);
+
+  updateUI();
+}
+
+//использовать крит-удар
+function useCrit() {
+  if (!currentEnemy) {
+    showScene(["You swing your sword into the air...", "There is no enemy."]);
+    return;
+  }
+
+  if (player.inventory.sword <= 0) {
+    showScene(["You have no weapon for a critical strike."]);
+    return;
+  }
+
+  combatLog = [];
+
+  const damageToEnemy = 60;
+  const damageToPlayer = 5;
+
+  currentEnemy.health -= damageToEnemy;
+  player.health -= damageToPlayer;
+
+  player.inventory.sword -= 1;
+
+  combatLog.push("CRITICAL STRIKE! 🗡️");
+  combatLog.push(`You deal ${damageToEnemy} damage to ${currentEnemy.name}`);
+  combatLog.push(
+    `${currentEnemy.name} HP: ${Math.max(currentEnemy.health, 0)}`,
+  );
+  combatLog.push(`Your HP: ${player.health}`);
+
+  showScene(combatLog);
+
+  if (currentEnemy.health <= 0) {
+    handleEnemyDeath();
+  }
+
+  updateUI();
+}
+
+//использовать зелье
+function usePotion() {
+  if (player.inventory.healthPotion <= 0) {
+    showScene(["No potions left."]);
+    return;
+  }
+
+  // ❗ если HP уже полный — НЕ тратим зелье
+  if (player.health >= 100) {
+    showScene([
+      "Your health is already full.",
+      "You don't need to use a potion.",
+    ]);
+    return;
+  }
+
+  player.inventory.healthPotion -= 1;
+  player.health += 30;
+
+  if (player.health > 100) player.health = 100;
+
+  showScene([
+    "You drink a health potion",
+    "+30 HP",
+    `Your HP: ${player.health}`,
+  ]);
+
+  updateUI();
+}
+
 // ресет
 function resetGame() {
   player.health = 100;
@@ -371,8 +453,10 @@ giveGoldBtn.addEventListener("click", giveGold);
 resetBtn.addEventListener("click", resetGame);
 drainBtn.addEventListener("click", drainBlood);
 potionBtn.addEventListener("click", usePotion);
+critBtn.addEventListener("click", useCrit);
 
 document.querySelector("#crypt-btn").onclick = () => changeLocation("crypt");
-document.querySelector("#cemetery-btn").onclick = () => changeLocation("cemetery");
+document.querySelector("#cemetery-btn").onclick = () =>
+  changeLocation("cemetery");
 document.querySelector("#hall-btn").onclick = () => changeLocation("hall");
 document.querySelector("#tower-btn").onclick = () => changeLocation("tower");
