@@ -4,8 +4,6 @@
 const player = {
   name: "Unknown Vampire",
   health: 100,
-  strength: 20,
-  shield: 10,
   level: 1,
   inventory: {
     sword: 1,
@@ -21,21 +19,22 @@ const locations = {
   crypt: {
     state: "guard",
     enemies: {
-      guard: { name: "Grave Guardian", maxHealth: 80, shield: 10 },
-      spiders: { name: "Black Spider", maxHealth: 50, shield: 5 },
+      guard: { name: "Grave Guardian", maxHealth: 80 },
+      spiders: { name: "Black Spider", maxHealth: 50 },
     },
   },
 
   cemetery: {
-    enemy: { name: "Skeleton", maxHealth: 60, shield: 5 },
+    enemy: { name: "Skeleton", maxHealth: 60 },
   },
 
   hall: {
-    enemy: { name: "Blood Knight", maxHealth: 120, shield: 20 },
+    state: "alive",
+    enemy: { name: "Blood Knight", maxHealth: 120 },
   },
 
   tower: {
-    enemy: { name: "Vampire Lord", maxHealth: 200, shield: 30 },
+    enemy: { name: "Vampire Lord", maxHealth: 200 },
   },
 };
 
@@ -113,14 +112,62 @@ function changeLocation(loc) {
 
   locationName.textContent = names[loc];
 
-  showScene([`You travel to ${names[loc]}`]);
-
-  handleLocation();
+  setTimeout(() => {
+    handleLocation();
+  });
 }
 
 // логика входа в локацию
 function handleLocation() {
   const loc = locations[currentLocation];
+
+  if (currentLocation === "hall") {
+    if (loc.state === "cleared") {
+      currentEnemy = null;
+
+      showScene([
+        "You enter the Blood Hall...",
+        "It is silent...",
+        "The Blood Knight is gone.",
+      ]);
+
+      return;
+    }
+    currentEnemy = createEnemy(loc.enemy);
+
+    showScene([
+      "You enter the Blood Hall...",
+      "The Blood Knight draws his weapon!",
+      `Blood Knight HP: ${currentEnemy.health}`,
+      "Hurry up!",
+    ]);
+
+    return;
+  }
+
+  if (currentLocation === "cemetery") {
+    currentEnemy = createEnemy(loc.enemy);
+
+    showScene([
+      "You step into the Moonlight Cemetery...",
+      "A Skeleton rises from the grave...",
+      `Skeleton HP: ${currentEnemy.health}`,
+    ]);
+
+    return;
+  }
+
+  if (currentLocation === "tower") {
+    currentEnemy = createEnemy(loc.enemy);
+
+    showScene([
+      "You enter the Forgotten Tower...",
+      "The Vampire Lord watches you silently...",
+      `Vampire Lord HP: ${currentEnemy.health}`,
+    ]);
+
+    return;
+  }
 
   // крипта — особая логика
   if (currentLocation === "crypt") {
@@ -223,39 +270,43 @@ function handleEnemyDeath() {
 
   const dead = currentEnemy;
   currentEnemy = null;
+  player.level++;
 
   setTimeout(() => {
     let lines = [`${dead.name} is defeated!`];
 
+    // 🧠 ЛОГИКА КРИПТЫ
     if (currentLocation === "crypt") {
       if (locations.crypt.state === "guard") {
         locations.crypt.state = "spiders";
-        player.level++;
 
         lines.push("Something crawls in the darkness...");
 
         showScene(lines);
 
         setTimeout(spawnEnemy, 3000);
+        updateUI();
         return;
       }
 
       if (locations.crypt.state === "spiders") {
         locations.crypt.state = "cleared";
-        player.level++;
 
         lines.push("The Crypt is now silent...");
         lines.push("The area is peaceful...");
 
         showScene(lines);
-
         updateUI();
         return;
       }
     }
 
+    if (currentLocation === "hall") {
+      locations.hall.state = "cleared";
+    }
+
     showScene(lines);
-    setTimeout(spawnEnemy, 3000);
+    updateUI();
   }, 1200);
 }
 
@@ -301,7 +352,6 @@ function drainBlood() {
 
       if (locations.crypt.state === "spiders") {
         locations.crypt.state = "cleared";
-        player.level++;
       }
     }
 
@@ -345,7 +395,7 @@ function giveGold() {
 
   setTimeout(() => {
     spawnEnemy();
-  }, 500);
+  }, 3000);
 
   updateUI();
 }
@@ -431,6 +481,7 @@ function resetGame() {
   currentEnemy = null;
 
   locations.crypt.state = "guard";
+  locations.hall.state = "alive";
 
   locationName.textContent = "Vampire Manor";
 
