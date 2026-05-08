@@ -341,24 +341,34 @@ function drainBlood() {
 
   // 💀 смерть врага
   if (currentEnemy.health <= 0) {
-    showScene([`${currentEnemy.name} is defeated!`]);
+    const dead = currentEnemy;
+    currentEnemy = null;
+
+    showScene([`${dead.name} is defeated!`]);
 
     if (currentLocation === "crypt") {
       if (locations.crypt.state === "guard") {
         locations.crypt.state = "spiders";
+        player.level++;
+
         setTimeout(spawnEnemy, 1200);
         return;
       }
 
       if (locations.crypt.state === "spiders") {
         locations.crypt.state = "cleared";
+        player.level++;
       }
     }
 
-    spawnEnemy();
-  }
+    if (currentLocation === "hall") {
+      locations.hall.state = "cleared";
+      player.level++;
+    }
 
-  updateUI();
+    updateUI();
+    return; // ❗ ВАЖНО: выходим, НЕ спавним нового врага
+  }
 }
 
 // дать золото
