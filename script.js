@@ -366,6 +366,11 @@ function drainBlood() {
       player.level++;
     }
 
+    if (currentLocation === "cemetery") {
+      locations.cemetery.state = "cleared";
+      player.level++;
+    }
+
     updateUI();
     return; // ❗ ВАЖНО: выходим, НЕ спавним нового врага
   }
