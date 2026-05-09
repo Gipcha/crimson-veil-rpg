@@ -1,6 +1,5 @@
-// =====================
-// 1. DATA (что есть в игре)
-// =====================
+//  DATA
+
 const player = {
   name: "Unknown Vampire",
   health: 100,
@@ -19,36 +18,52 @@ const locations = {
   crypt: {
     state: "guard",
     enemies: {
-      guard: { name: "Grave Guardian", maxHealth: 80 },
-      spiders: { name: "Black Spider", maxHealth: 50 },
+      guard: {
+        name: "Grave Guardian",
+        maxHealth: 80,
+      },
+      spiders: {
+        name: "Black Spider",
+        maxHealth: 50,
+      },
     },
   },
 
   cemetery: {
-    enemy: { name: "Skeleton", maxHealth: 60 },
+    state: "skeleton",
+    chestFound: false,
+
+    enemy: {
+      name: "Skeleton",
+      maxHealth: 60,
+    },
   },
 
   hall: {
     state: "alive",
-    enemy: { name: "Blood Knight", maxHealth: 120 },
+    enemy: {
+      name: "Blood Knight",
+      maxHealth: 120,
+    },
   },
 
   tower: {
-    enemy: { name: "Vampire Lord", maxHealth: 200 },
+    enemy: {
+      name: "Vampire Lord",
+      maxHealth: 200,
+    },
   },
 };
 
-// =====================
-// 2. STATE (что происходит сейчас)
-// =====================
+// STATE
+
 let currentLocation = "manor";
 let currentEnemy = null;
 let isTransitioning = false;
 let combatLog = [];
 
-// =====================
-// 3. DOM (элементы страницы)
-// =====================
+// DOM
+
 const startBtn = document.querySelector("#start-btn");
 const nameInput = document.querySelector("#name-input");
 const startScreen = document.querySelector("#start-screen");
@@ -68,9 +83,8 @@ const critBtn = document.querySelector("#crit-btn");
 const chronicle = document.querySelector("#dark-chronicle");
 const locationName = document.querySelector("#location-name");
 
-// =====================
-// 4. UI (обновление интерфейса)
-// =====================
+// UI
+
 function updateUI() {
   playerName.textContent = player.name;
   playerHealth.textContent = player.health;
@@ -83,9 +97,8 @@ function updateUI() {
   `;
 }
 
-// =====================
-// 5. SCENE (вывод текста)
-// =====================
+// SCENE
+
 function showScene(lines) {
   chronicle.innerHTML = `
     <div class="scene">
@@ -94,11 +107,8 @@ function showScene(lines) {
   `;
 }
 
-// =====================
-// 6. GAME LOGIC
-// =====================
+// GAME LOGIC
 
-// смена локации
 function changeLocation(loc) {
   currentLocation = loc;
 
@@ -116,63 +126,54 @@ function changeLocation(loc) {
     handleLocation();
   });
 }
-
-// логика входа в локацию
 function handleLocation() {
   const loc = locations[currentLocation];
 
   if (currentLocation === "hall") {
     if (loc.state === "cleared") {
       currentEnemy = null;
-
       showScene([
         "You enter the Blood Hall...",
         "It is silent...",
         "The Blood Knight is gone.",
       ]);
-
       return;
     }
-    currentEnemy = createEnemy(loc.enemy);
 
+    currentEnemy = createEnemy(loc.enemy);
     showScene([
       "You enter the Blood Hall...",
       "The Blood Knight draws his weapon!",
-      `Blood Knight HP: ${currentEnemy.health}`,
-      "Hurry up!",
+      `HP: ${currentEnemy.health}`,
     ]);
-
     return;
   }
 
   if (currentLocation === "cemetery") {
     currentEnemy = createEnemy(loc.enemy);
-
     showScene([
       "You step into the Moonlight Cemetery...",
       "A Skeleton rises from the grave...",
-      `Skeleton HP: ${currentEnemy.health}`,
+      `HP: ${currentEnemy.health}`,
     ]);
-
     return;
   }
 
   if (currentLocation === "tower") {
     currentEnemy = createEnemy(loc.enemy);
-
     showScene([
       "You enter the Forgotten Tower...",
       "The Vampire Lord watches you silently...",
-      `Vampire Lord HP: ${currentEnemy.health}`,
+      `HP: ${currentEnemy.health}`,
     ]);
-
     return;
   }
 
-  // крипта — особая логика
   if (currentLocation === "crypt") {
-    if (loc.state === "guard") {
-      currentEnemy = createEnemy(loc.enemies.guard);
+    const crypt = locations.crypt;
+
+    if (crypt.state === "guard") {
+      currentEnemy = createEnemy(crypt.enemies.guard);
 
       showScene([
         "You enter the Crypt...",
@@ -184,22 +185,31 @@ function handleLocation() {
       return;
     }
 
-    if (loc.state === "spiders") {
-      spawnEnemy();
+    if (crypt.state === "spiders") {
+      currentEnemy = createEnemy(crypt.enemies.spiders);
+
+      showScene([
+        "You enter the Crypt...",
+        "Black Spider appears!",
+        `Black Spider HP: ${currentEnemy.health}`,
+      ]);
+
       return;
     }
 
-    if (loc.state === "cleared") {
+    if (crypt.state === "cleared") {
       currentEnemy = null;
+
       showScene(["The Crypt is empty."]);
+
       return;
     }
   }
 
-  spawnEnemy();
+  currentEnemy = null;
+  showScene(["The area is peaceful..."]);
 }
 
-// создание врага
 function createEnemy(template) {
   return {
     ...template,
@@ -207,7 +217,6 @@ function createEnemy(template) {
   };
 }
 
-// спавн врага
 function spawnEnemy() {
   const loc = locations[currentLocation];
 
@@ -228,20 +237,19 @@ function spawnEnemy() {
   currentEnemy = createEnemy(enemy);
 
   showScene([`${currentEnemy.name} appears!`]);
+
+  updateUI();
 }
 
-// =====================
-// 7. ACTIONS
-// =====================
+// ACTIONS
 
-// атака
 function attack() {
   if (!currentEnemy) {
     showScene(["Nothing to attack here."]);
     return;
   }
 
-  combatLog = []; // ❗ очищаем в начале действия
+  combatLog = [];
 
   const damageToEnemy = 20;
   const damageToPlayer = 5;
@@ -264,7 +272,7 @@ function attack() {
 
   updateUI();
 }
-//
+
 function handleEnemyDeath() {
   if (!currentEnemy) return;
 
@@ -275,7 +283,6 @@ function handleEnemyDeath() {
   setTimeout(() => {
     let lines = [`${dead.name} is defeated!`];
 
-    // 🧠 ЛОГИКА КРИПТЫ
     if (currentLocation === "crypt") {
       if (locations.crypt.state === "guard") {
         locations.crypt.state = "spiders";
@@ -305,31 +312,58 @@ function handleEnemyDeath() {
       locations.hall.state = "cleared";
     }
 
+    if (currentLocation === "cemetery") {
+      if (!locations.cemetery.chestFound) {
+        locations.cemetery.chestFound = true;
+
+        player.inventory.gold += 10;
+        player.inventory.key += 1;
+
+        showScene([
+          "Skeleton is defeated!",
+          "You discover an old chest among the graves...",
+          "You found 10 gold!",
+          "You found a key!",
+        ]);
+
+        updateUI();
+        return;
+      }
+
+      showScene([
+        "Skeleton is defeated!",
+        "The cemetery grows silent again...",
+      ]);
+
+      updateUI();
+      return;
+    }
+
     showScene(lines);
     updateUI();
   }, 1200);
 }
 
-//
 function drainBlood() {
   if (!currentEnemy) {
     showScene(["There is nothing to drain."]);
     return;
   }
 
-  // 🧠 ты наносишь слабый урон
+  if (currentLocation === "cemetery") {
+    showScene(["You can't use Drain in the Cemetery."]);
+    return;
+  }
+
   const damageToEnemy = 15;
   currentEnemy.health -= damageToEnemy;
 
-  // 🧠 враг отвечает
   const damageToPlayer = 10;
   player.health -= damageToPlayer;
 
-  // 🧠 ты лечишься
   const heal = 5;
   player.health += heal;
 
-  // ограничение (чтобы не было 120/100)
   if (player.health > 100) player.health = 100;
 
   showScene([
@@ -339,67 +373,31 @@ function drainBlood() {
     `Your HP: ${player.health}`,
   ]);
 
-  // 💀 смерть врага
   if (currentEnemy.health <= 0) {
-    const dead = currentEnemy;
-    currentEnemy = null;
-
-    showScene([`${dead.name} is defeated!`]);
-
-    if (currentLocation === "crypt") {
-      if (locations.crypt.state === "guard") {
-        locations.crypt.state = "spiders";
-        player.level++;
-
-        setTimeout(spawnEnemy, 1200);
-        return;
-      }
-
-      if (locations.crypt.state === "spiders") {
-        locations.crypt.state = "cleared";
-        player.level++;
-      }
-    }
-
-    if (currentLocation === "hall") {
-      locations.hall.state = "cleared";
-      player.level++;
-    }
-
-    if (currentLocation === "cemetery") {
-      locations.cemetery.state = "cleared";
-      player.level++;
-    }
-
-    updateUI();
-    return; // ❗ ВАЖНО: выходим, НЕ спавним нового врага
+    handleEnemyDeath();
   }
+
+  updateUI();
 }
 
-// дать золото
 function giveGold() {
-  // ❗ 1. проверка локации
   if (currentLocation !== "crypt") {
     showScene(["There is no one to pay here."]);
     return;
   }
 
-  // ❗ 2. проверка состояния крипты
   if (locations.crypt.state !== "guard") {
     showScene(["There is no Guardian to pay."]);
     return;
   }
 
-  // ❗ 3. проверка золота
   if (player.inventory.gold < 3) {
     showScene(["You don't have enough gold!"]);
     return;
   }
 
-  // 💰 списание
   player.inventory.gold -= 3;
 
-  // 🔁 смена состояния
   locations.crypt.state = "spiders";
 
   showScene([
@@ -415,7 +413,6 @@ function giveGold() {
   updateUI();
 }
 
-//использовать крит-удар
 function useCrit() {
   if (!currentEnemy) {
     showScene(["You swing your sword into the air...", "There is no enemy."]);
@@ -453,14 +450,12 @@ function useCrit() {
   updateUI();
 }
 
-//использовать зелье
 function usePotion() {
   if (player.inventory.healthPotion <= 0) {
     showScene(["No potions left."]);
     return;
   }
 
-  // ❗ если HP уже полный — НЕ тратим зелье
   if (player.health >= 100) {
     showScene([
       "Your health is already full.",
@@ -483,7 +478,6 @@ function usePotion() {
   updateUI();
 }
 
-// ресет
 function resetGame() {
   player.health = 100;
   player.level = 1;
@@ -497,6 +491,8 @@ function resetGame() {
 
   locations.crypt.state = "guard";
   locations.hall.state = "alive";
+  locations.cemetery.state = "skeleton";
+  locations.cemetery.chestFound = false;
 
   locationName.textContent = "Vampire Manor";
 
@@ -504,10 +500,8 @@ function resetGame() {
 
   updateUI();
 }
+// EVENTS
 
-// =====================
-// 8. EVENTS (кнопки)
-// =====================
 startBtn.addEventListener("click", () => {
   player.name = nameInput.value || "Unknown Vampire";
   startScreen.style.display = "none";
