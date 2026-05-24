@@ -80,6 +80,11 @@ const resetBtn = document.querySelector("#reset-btn");
 const potionBtn = document.querySelector("#potion-btn");
 const critBtn = document.querySelector("#crit-btn");
 
+const cryptBtn = document.querySelector("#crypt-btn");
+const cemeteryBtn = document.querySelector("#cemetery-btn");
+const hallBtn = document.querySelector("#hall-btn");
+const towerBtn = document.querySelector("#tower-btn");
+
 const chronicle = document.querySelector("#dark-chronicle");
 const locationName = document.querySelector("#location-name");
 
@@ -381,6 +386,10 @@ function checkPlayerDeath() {
     giveGoldBtn.disabled = true;
     potionBtn.disabled = true;
     critBtn.disabled = true;
+    cryptBtn.disabled = true;
+    cemeteryBtn.disabled = true;
+    hallBtn.disabled = true;
+    towerBtn.disabled = true;
   }
 }
 
@@ -565,6 +574,10 @@ function resetGame() {
   giveGoldBtn.disabled = false;
   potionBtn.disabled = false;
   critBtn.disabled = false;
+  cryptBtn.disabled = false;
+  cemeteryBtn.disabled = false;
+  hallBtn.disabled = false;
+  towerBtn.disabled = false;
 
   updateUI();
 }
@@ -583,8 +596,7 @@ drainBtn.addEventListener("click", drainBlood);
 potionBtn.addEventListener("click", usePotion);
 critBtn.addEventListener("click", useCrit);
 
-document.querySelector("#crypt-btn").onclick = () => changeLocation("crypt");
-document.querySelector("#cemetery-btn").onclick = () =>
-  changeLocation("cemetery");
-document.querySelector("#hall-btn").onclick = () => changeLocation("hall");
-document.querySelector("#tower-btn").onclick = () => changeLocation("tower");
+cryptBtn.onclick = () => changeLocation("crypt");
+cemeteryBtn.onclick = () => changeLocation("cemetery");
+hallBtn.onclick = () => changeLocation("hall");
+towerBtn.onclick = () => changeLocation("tower");
