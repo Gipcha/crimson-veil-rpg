@@ -61,6 +61,7 @@ let currentLocation = "manor";
 let currentEnemy = null;
 let isTransitioning = false;
 let combatLog = [];
+let gameWon = false;
 
 // DOM
 
@@ -179,7 +180,8 @@ function handleLocation() {
     currentEnemy = createEnemy(loc.enemy);
     showScene([
       "You unlock the Forgotten Tower...",
-      "The Vampire Lord watches you silently...",
+      "The Lord of Crimson Vale awaits.",
+      "FINAL BOSS: Vampire Lord",
       `Vampire Lord HP: ${currentEnemy.health}`,
     ]);
     return;
@@ -307,6 +309,35 @@ function handleEnemyDeath() {
 
   setTimeout(() => {
     let lines = [`${dead.name} is defeated!`];
+    if (currentLocation === "tower") {
+      gameWon = true;
+
+      showScene([
+        "The Vampire Lord turns to ash...",
+        "Silence falls over Crimson Vale...",
+        "",
+        "YOU WIN",
+        `${player.name} is now the Master of Crimson Vale.`,
+        "The night belongs to you now...",
+        "",
+        "Thanks for playing Crimson Vale",
+      ]);
+
+      // блок кнопок
+      attackBtn.disabled = true;
+      drainBtn.disabled = true;
+      giveGoldBtn.disabled = true;
+      potionBtn.disabled = true;
+      critBtn.disabled = true;
+
+      cryptBtn.disabled = true;
+      cemeteryBtn.disabled = true;
+      hallBtn.disabled = true;
+      towerBtn.disabled = true;
+
+      updateUI();
+      return;
+    }
 
     if (currentLocation === "crypt") {
       if (locations.crypt.state === "guard") {
@@ -578,6 +609,7 @@ function resetGame() {
   cemeteryBtn.disabled = false;
   hallBtn.disabled = false;
   towerBtn.disabled = false;
+  gameWon = false;
 
   updateUI();
 }
