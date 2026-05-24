@@ -160,11 +160,22 @@ function handleLocation() {
   }
 
   if (currentLocation === "tower") {
+    if (player.inventory.key <= 0) {
+      currentEnemy = null;
+
+      showScene([
+        "You approach the Forgotten Tower...",
+        "The gates are sealed.",
+        "You need a key to enter the Tower.",
+      ]);
+      return;
+    }
+
     currentEnemy = createEnemy(loc.enemy);
     showScene([
-      "You enter the Forgotten Tower...",
+      "You unlock the Forgotten Tower...",
       "The Vampire Lord watches you silently...",
-      `HP: ${currentEnemy.health}`,
+      `Vampire Lord HP: ${currentEnemy.health}`,
     ]);
     return;
   }
