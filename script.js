@@ -268,11 +268,20 @@ function attack() {
   currentEnemy.health -= damageToEnemy;
   player.health -= damageToPlayer;
 
+  checkPlayerDeath();
+
+  if (player.health <= 0) {
+    return;
+  }
+
   combatLog.push(`You hit ${currentEnemy.name} for ${damageToEnemy}`);
+
   combatLog.push(
     `${currentEnemy.name} HP: ${Math.max(currentEnemy.health, 0)}`,
   );
+
   combatLog.push(`${currentEnemy.name} hits you for ${damageToPlayer}`);
+
   combatLog.push(`Your HP: ${player.health}`);
 
   showScene(combatLog);
@@ -355,6 +364,26 @@ function handleEnemyDeath() {
   }, 1200);
 }
 
+function checkPlayerDeath() {
+  if (player.health <= 0) {
+    player.health = 0;
+    currentEnemy = null;
+
+    showScene([
+      "You collapse into darkness...",
+      "GAME OVER",
+      "Press RESET to start again.",
+    ]);
+
+    updateUI();
+    attackBtn.disabled = true;
+    drainBtn.disabled = true;
+    giveGoldBtn.disabled = true;
+    potionBtn.disabled = true;
+    critBtn.disabled = true;
+  }
+}
+
 function drainBlood() {
   if (!currentEnemy) {
     showScene(["There is nothing to drain."]);
@@ -367,15 +396,26 @@ function drainBlood() {
   }
 
   const damageToEnemy = 15;
-  currentEnemy.health -= damageToEnemy;
-
   const damageToPlayer = 10;
+  const heal = 5;
+
+  // урон
+  currentEnemy.health -= damageToEnemy;
   player.health -= damageToPlayer;
 
-  const heal = 5;
+  // лечение
   player.health += heal;
 
-  if (player.health > 100) player.health = 100;
+  if (player.health > 100) {
+    player.health = 100;
+  }
+
+  // смерть игрока
+  checkPlayerDeath();
+
+  if (player.health <= 0) {
+    return;
+  }
 
   showScene([
     `You drain blood from ${currentEnemy.name} for ${damageToEnemy}`,
@@ -384,6 +424,7 @@ function drainBlood() {
     `Your HP: ${player.health}`,
   ]);
 
+  // смерть врага
   if (currentEnemy.health <= 0) {
     handleEnemyDeath();
   }
@@ -427,11 +468,13 @@ function giveGold() {
 function useCrit() {
   if (!currentEnemy) {
     showScene(["You swing your sword into the air...", "There is no enemy."]);
+
     return;
   }
 
   if (player.inventory.sword <= 0) {
     showScene(["You have no weapon for a critical strike."]);
+
     return;
   }
 
@@ -445,11 +488,20 @@ function useCrit() {
 
   player.inventory.sword -= 1;
 
+  checkPlayerDeath();
+
+  if (player.health <= 0) {
+    return;
+  }
+
   combatLog.push("CRITICAL STRIKE! 🗡️");
+
   combatLog.push(`You deal ${damageToEnemy} damage to ${currentEnemy.name}`);
+
   combatLog.push(
     `${currentEnemy.name} HP: ${Math.max(currentEnemy.health, 0)}`,
   );
+
   combatLog.push(`Your HP: ${player.health}`);
 
   showScene(combatLog);
@@ -460,7 +512,6 @@ function useCrit() {
 
   updateUI();
 }
-
 function usePotion() {
   if (player.inventory.healthPotion <= 0) {
     showScene(["No potions left."]);
@@ -508,6 +559,12 @@ function resetGame() {
   locationName.textContent = "Vampire Manor";
 
   showScene(["The night is waiting..."]);
+
+  attackBtn.disabled = false;
+  drainBtn.disabled = false;
+  giveGoldBtn.disabled = false;
+  potionBtn.disabled = false;
+  critBtn.disabled = false;
 
   updateUI();
 }
