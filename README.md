@@ -5,7 +5,7 @@ A browser-based text RPG built with vanilla JavaScript.
 The game features turn-based combat, character progression, multiple enemy types and location-based gameplay.
 
 ## 🔗 Live Demo
-[View Live Demo] gipcha.github.io/crimson-veil-rpg/
+[View Live Demo](https://gipcha.github.io/crimson-veil-rpg/)
 
 ## ✨ Features
 
