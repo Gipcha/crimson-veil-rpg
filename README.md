@@ -27,7 +27,14 @@ The game features turn-based combat, character progression, multiple enemy types
 
 ## 📸 Preview
 
-![Crimson Vale preview](./assets/images/screenshot.png)
+### Character Setup
+![Character setup](./assets/screenshot-start.png)
+
+### Gameplay
+![Crimson Vale gameplay](./assets/screenshot-gameplay.png)
+
+### Combat
+![Crimson Vale combat](./assets/screenshot-combat.png)
 
 ## 🔧 Implementation
 
