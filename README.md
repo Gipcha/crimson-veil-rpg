@@ -1,82 +1,54 @@
-# Crimson Vale 🧛‍♂️
+# 🧛 Crimson Vale
 
-A browser-based dungeon adventure game built with vanilla JavaScript.
+A browser-based text RPG built with vanilla JavaScript.
 
-## 🎮 About the Game
+The game features turn-based combat, character progression, multiple enemy types and location-based gameplay.
 
-Crimson Vale is a linear dungeon-style RPG level where the player explores dangerous locations, fights enemies, and survives encounters.
+## 🔗 Live Demo
+[View Live Demo]([https://gipcha.github.io/crimson-veil-rpg/](https://gipcha.github.io/crimson-veil-rpg/))
 
-Each location contains its own scripted logic, enemy states, and progression flow.
-
-You play as a vampire who must fight through the Crypt, Cemetery, Blood Hall, and finally face the Vampire Lord in the Forgotten Tower.
-
-## ⚔️ Gameplay Features
+## ✨ Features
 
 - Turn-based combat system
-- Multiple enemy types (Guardian, Spider, Skeleton, Blood Knight, Vampire Lord)
-- Location-based progression system
-- State-driven enemies (e.g. guard → spiders → cleared)
-- Player system (health, level, inventory)
-- Healing mechanic (Drain Blood & Potion system)
-- Story-driven scene system (Dark Chronicle)
-- Final boss encounter with win condition
+- Multiple enemy types
+- Player health and progression
+- Inventory and item mechanics
+- Location-based game states
+- Dynamic interface updates
+- Game state management with JavaScript
 
-## 🧠 Core Mechanics
-
-### Combat
-
-Players can:
-
-- Attack enemies
-- Use special critical strike
-- Drain blood to heal during combat
-- Use potions to restore health
-
-### Progression
-
-- Each enemy defeat increases player level
-- Certain locations unlock new states after combat
-
-### Locations
-
-- Crypt (multi-phase encounter)
-- Moonlight Cemetery (combat + reward chest)
-- Blood Hall (mini-boss)
-- Forgotten Tower (final boss encounter)
-
-## 🧱 Tech Stack
+## 🛠 Tech Stack
 
 - HTML5
 - CSS3
-- Vanilla JavaScript (no frameworks)
+- JavaScript (ES6+)
+- DOM API
+- Git
 
-## 📁 Project Structure
+## 📸 Preview
 
-- index.html — UI structure
-- script.js — game logic and state management
-- style.css — visual styling
+![Crimson Vale preview](./assets/images/screenshot.png)
 
-## 🚀 How to Run
+## 🔧 Implementation
 
-Open `index.html` in any modern browser. No installation required.
+The game is built around a state-driven approach using JavaScript.
 
-## 🎯 Design Philosophy
+Player statistics, enemies, inventory and current location are stored and updated as the game progresses. The interface is rendered dynamically based on the current game state.
 
-This project focuses on:
+Combat is implemented as a turn-based system where player actions and enemy responses update character statistics and determine the next state of the game.
 
-- state-based gameplay logic
-- DOM manipulation without frameworks
-- procedural storytelling through JavaScript
-- simple but structured combat systems
+## ▶️ Run Locally
 
-## 🧪 Future Improvements (optional ideas)
+Clone the repository:
 
-- Save / Load system using localStorage
-- More enemy variety per location
-- Inventory upgrades system
-- Visual combat animations
-- Sound effects and ambience
+```bash
+git clone https://github.com/Gipcha/crimson-veil-rpg.git
+```
 
----
+Navigate to the project directory:
 
-Made as a learning project to practice JavaScript game architecture and DOM-based interaction.
+```bash
+cd crimson-veil-rpg
+```
+
+Then open `index.html` in your browser.
